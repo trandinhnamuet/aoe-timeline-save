@@ -14,7 +14,7 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-SRC = ["src/main.c", "src/app.c", "src/game.c", "src/rules.c", "src/report.c", "src/ui.c"]
+SRC = ["src/main.c", "src/app.c", "src/game.c", "src/rules.c", "src/report.c", "src/ui.c", "assets/app.rc"]
 LIBS = ["-lgdi32", "-luser32", "-lshell32", "-ladvapi32", "-lmsimg32", "-ldwmapi"]
 ZIG = [sys.executable, "-m", "ziglang"]
 

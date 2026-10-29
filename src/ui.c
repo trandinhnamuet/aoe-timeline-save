@@ -662,7 +662,9 @@ static HWND create_window(int show)
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = CreateSolidBrush(BG);
     wc.lpszClassName = L"AoeTimelineWnd";
-    wc.hIcon = LoadIconW(wc.hInstance, MAKEINTRESOURCEW(1));
+    wc.hIcon = LoadIconW(wc.hInstance, MAKEINTRESOURCEW(1));   /* assets/app.rc */
+    wc.hIconSm = (HICON)LoadImageW(wc.hInstance, MAKEINTRESOURCEW(1), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
+                                   GetSystemMetrics(SM_CYSMICON), 0);
     RegisterClassExW(&wc);
     HDC sdc = GetDC(NULL);
     U.s = GetDeviceCaps(sdc, LOGPIXELSX) / 96.0;

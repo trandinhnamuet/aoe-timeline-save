@@ -1,6 +1,6 @@
-Công cụ trọng tài cho giải AoE (Rise of Rome 1.0, AoE-HD / XArena). Khi trận bị disconnect, chạy
-`aoe-timeline.exe` từ USB trên máy còn kết nối (không cần cài, bấm *Yes* khi Windows hỏi quyền Administrator). Tool
-đọc timeline mà game ghi lại và hiện ra:
+Công cụ trọng tài cho giải AoE (Rise of Rome 1.0, AoE-HD / XArena). Khi trận bị disconnect, tải
+`aoe-timeline.exe` về máy còn kết nối và chạy luôn (không cần cài, bấm *Yes* khi Windows hỏi quyền Administrator).
+Tool đọc timeline mà game ghi lại và hiện ra:
 
 - kết luận theo luật xử disconnect (Solo mốc phút 18, 4VS4 mốc phút 25, mức 60-40);
 - tỉ lệ dân số của hai phe lúc rớt mạng, kèm biểu đồ timeline cả trận;

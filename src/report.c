@@ -1,4 +1,4 @@
-/* Báo cáo lưu cạnh file exe (USB): .txt (đọc được bằng Notepad) và .csv (toàn bộ timeline). */
+/* Báo cáo lưu cạnh file exe: .txt (đọc được bằng Notepad) và .csv (toàn bộ timeline). */
 #include "app.h"
 #include <stdio.h>
 #include <wchar.h>

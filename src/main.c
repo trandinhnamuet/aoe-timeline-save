@@ -100,7 +100,7 @@ int WINAPI wWinMain(HINSTANCE hi, HINSTANCE prev, PWSTR cmd, int show)
         if (report_write(a))
             swprintf(a->status, 260, L"Đã tự lưu báo cáo: %ls.txt", a->report_path);
         else
-            swprintf(a->status, 260, L"!Không lưu được báo cáo vào %ls (USB chỉ đọc?)", a->out_dir);
+            swprintf(a->status, 260, L"!Không lưu được báo cáo vào %ls (thư mục chỉ đọc?)", a->out_dir);
     } else if (a->demo) {
         swprintf(a->status, 260, L"Đang xem DỮ LIỆU MẪU (--demo).");
     }

@@ -11,7 +11,9 @@ của luật**: Solo xét mốc phút 18, 4VS4 xét mốc phút 25, và mức 60
 
 1. **Khi có disconnect, giữ nguyên game trên máy còn kết nối.** Không thoát trận. Nếu game tự chuyển sang màn
    Achievements thì cũng không bấm thoát khỏi màn đó: dữ liệu trận vẫn còn nguyên trong bộ nhớ cho tới khi rời màn này.
-2. Cắm USB có `aoe-timeline.exe`, Alt+Tab ra Windows, chạy file. Không cần cài đặt.
+2. Alt+Tab ra Windows, tải `aoe-timeline.exe` từ trang
+   [Releases](https://github.com/trandinhnamuet/aoe-timeline-save/releases/latest) về và chạy luôn. Không cần cài
+   đặt.
 3. Windows hỏi quyền **Administrator**: bấm *Yes*. Game XArena chạy bằng quyền admin, nên phải có quyền này mới đọc
    được bộ nhớ game.
 4. Tool tự tìm `EMPIRESX.EXE`, đọc trận và hiện **kết luận theo luật**:
@@ -20,9 +22,9 @@ của luật**: Solo xét mốc phút 18, 4VS4 xét mốc phút 25, và mức 60
    - **Timeline.** Biểu đồ toàn trận; rê chuột lên biểu đồ để xem tỉ lệ ở từng thời điểm. Vạch đỏ là mẫu dùng để xử.
    - **Tỉ lệ dân số lúc rớt mạng** của hai phe.
    - **Quân trước đời 3.** Mỗi người chơi: lúc kích đời 3, lúc lên xong đời 3, quân thứ 1, quân thứ 2 và kết luận.
-5. Báo cáo được **tự lưu cạnh file exe** (thư mục `BaoCao-AoE-Timeline` trên USB): file `.txt` đọc bằng Notepad,
-   file `.csv` chứa toàn bộ timeline. Nút **LƯU BÁO CÁO** lưu thêm một ảnh `.bmp` của màn hình kết quả.
-6. Tắt tool, rút USB. Tool không ghi gì lên máy thi đấu.
+5. Báo cáo được **tự lưu cạnh file exe** (thư mục `BaoCao-AoE-Timeline`): file `.txt` đọc bằng Notepad, file
+   `.csv` chứa toàn bộ timeline. Nút **LƯU BÁO CÁO** lưu thêm một ảnh `.bmp` của màn hình kết quả.
+6. Tắt tool. Ngoài file exe và thư mục báo cáo, tool không ghi gì khác lên máy.
 
 Tool chỉ mở game với quyền **đọc bộ nhớ** (`PROCESS_VM_READ`): không ghi vào game, không chèn DLL, không gửi gì ra
 mạng. BTC nên thông báo trước với các đội rằng trọng tài sẽ dùng tool này khi có disconnect.
