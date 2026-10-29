@@ -1,0 +1,105 @@
+# AoE Timeline: build trên máy Windows của GitHub và đăng Release kèm chữ ký.
+#
+# - mỗi lần đẩy lên main: kiểm thử luật xử + build, exe lưu ở Actions > artifact;
+# - tag v* (vd v1.0.0): đăng GitHub Release gồm aoe-timeline.exe, SHA256SUMS.txt và chứng nhận nguồn gốc
+#   (build provenance, ký bằng Sigstore qua OIDC của GitHub Actions). Ai cũng kiểm được exe được build từ commit nào
+#   của repo này, bằng workflow này, không ai sửa sau đó:
+#       gh attestation verify aoe-timeline.exe -R trandinhnamuet/aoe-timeline-save
+# - build tất định: tự build lại từ cùng commit (python build.py, cùng ziglang) ra đúng SHA-256 của file Release.
+name: release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  win:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.ref_name }}     # dùng qua biến môi trường, không chèn thẳng vào lệnh shell
+    steps:
+      - name: Kiểm tên tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: '[[ "$TAG" =~ ^v[0-9]+(\.[0-9]+)*$ ]] || { echo "tag phải có dạng v<N>[.<N>...]"; exit 1; }'
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cài zig
+        run: python -m pip install ziglang==0.13.0
+
+      - name: Kiểm thử luật xử
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python build.py test
+
+      - name: Build
+        shell: bash
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then export APP_VERSION="${TAG#v}"; fi
+          python build.py
+          dist/aoe-timeline.exe --demo --shot dist/demo.bmp
+          (cd dist && sha256sum aoe-timeline.exe | tee SHA256SUMS.txt)
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: aoe-timeline-${{ github.run_id }}
+          path: |
+            dist/aoe-timeline.exe
+            dist/SHA256SUMS.txt
+
+      - name: Chứng nhận nguồn gốc
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/aoe-timeline.exe
+
+      - name: Mô tả bản phát hành
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          SHA=$(cut -d' ' -f1 dist/SHA256SUMS.txt)
+          {
+            cat release/notes.md
+            echo
+            echo "## Kiểm tra file tải về đúng với mã nguồn"
+            echo
+            echo "SHA-256 của \`aoe-timeline.exe\`:"
+            echo
+            echo "\`\`\`"
+            echo "$SHA"
+            echo "\`\`\`"
+            echo
+            echo "1. Chữ ký nguồn gốc (Sigstore): \`gh attestation verify aoe-timeline.exe -R ${{ github.repository }}\`"
+            echo "   — xác nhận file được build từ commit [\`${GITHUB_SHA::7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) bằng workflow \`release.yml\` trên GitHub Actions."
+            echo "2. So mã hash: PowerShell \`Get-FileHash aoe-timeline.exe\` phải ra đúng SHA-256 ở trên."
+            echo "3. Tự build lại: checkout commit trên, \`pip install ziglang==0.13.0\`, đặt \`APP_VERSION=${TAG#v}\`, chạy \`python build.py\` → cùng SHA-256 (build tất định)."
+          } > release-body.md
+
+      - name: Đăng Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          name: AoE Timeline ${{ github.ref_name }}
+          body_path: release-body.md
+          make_latest: true
+          files: |
+            dist/aoe-timeline.exe
+            dist/SHA256SUMS.txt
