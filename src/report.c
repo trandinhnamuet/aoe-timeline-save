@@ -71,7 +71,7 @@ static void write_txt(Out *o, App *a)
     for (int k = 0; k < an->nsides; k++)
         tot += an->side_pop[k];
     for (int k = 0; k < an->nsides; k++)
-        put(o, L"  Phe %d: %ls — %ld dân (%.1f%%)\r\n", k + 1, an->side_name[k], an->side_pop[k],
+        put(o, L"  Phe %d: %ls — dân số %ld (dân + quân), %.1f%%\r\n", k + 1, an->side_name[k], an->side_pop[k],
             tot ? 100.0 * an->side_pop[k] / tot : 0.0);
 
     put(o, L"\r\nNGƯỜI CHƠI\r\n");
@@ -79,9 +79,9 @@ static void write_txt(Out *o, App *a)
         const Player *p = &s->p[i];
         wchar_t team[16];
         swprintf(team, 16, p->team ? L"đội %d" : L"không đội", p->team);
-        put(o, L"  P%d %ls — %ls, %ls, %ls, dân số hiện tại %.0f, %d mẫu timeline%ls\r\n", p->number, p->name,
-            civ_name(p->civ), team, status_name(p), p->pop_now, p->n_samples,
-            p->number == s->me ? L" (máy này)" : L"");
+        put(o, L"  P%d %ls — %ls, %ls, %ls, lúc đọc: dân số %.0f (%.0f dân, %d quân), %d mẫu timeline%ls\r\n",
+            p->number, p->name, civ_name(p->civ), team, status_name(p), p->pop_now, p->vil_now, p->n_mil,
+            p->n_samples, p->number == s->me ? L" (máy này)" : L"");
     }
 
     put(o, L"\r\nKIỂM TRA QUÂN TRƯỚC ĐỜI 3\r\n");
@@ -94,7 +94,7 @@ static void write_txt(Out *o, App *a)
         int fl = an->mil_flags[i];
         int level;
         put(o, L"  P%d %ls: lên xong đời 2 %ls · kích đời 3 %ls · lên xong đời 3 %ls · %d quân còn sống → %ls\r\n",
-            p->number, p->name, e2, c, d, p->n_mil, mil_verdict(fl, p->n_mil, &level));
+            p->number, p->name, e2, c, d, p->n_mil, mil_verdict(fl, p->n_mil, 0, &level));
         for (int k = 0; k < p->n_mil && k < MAX_MIL; k++) {
             const MilUnit *u = &p->mil[k];
             fmt_time(u->born_s, c, 16);

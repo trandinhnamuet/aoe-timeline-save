@@ -215,7 +215,7 @@ static int chart_max_samples(const Snapshot *s)
 
 static void chart(HDC dc, int x, int y, int w, int h)
 {
-    card(dc, x, y, w, h, L"TIMELINE DÂN SỐ (GAME GHI 15 GIÂY MỘT MẪU)");
+    card(dc, x, y, w, h, L"TIMELINE DÂN SỐ = DÂN + QUÂN (GAME GHI 15 GIÂY MỘT MẪU)");
     const Snapshot *s = &U.a->snap;
     const Analysis *an = &U.a->an;
     int cx = x + S(54), cy = y + S(46), cw = w - S(76), ch = h - S(84);
@@ -331,23 +331,32 @@ static void shares(HDC dc, int x, int y, int w, int h)
         tot += an->side_pop[sd];
     int yy = y + S(44);
     int show = an->nsides < 4 ? an->nsides : 4;
-    int rowh = an->nsides <= 2 ? S(70) : S(44);
+    int rowh = an->nsides <= 2 ? S(86) : S(44);
     for (int sd = 0; sd < show; sd++) {
         double pc = tot ? 100.0 * an->side_pop[sd] / tot : 0;
-        int first = -1;
-        for (int i = 0; i < s->n && first < 0; i++)
-            if (an->side_of[i] == sd)
-                first = i;
+        int first = -1, vil = 0, mil = 0;
+        for (int i = 0; i < s->n; i++)
+            if (an->side_of[i] == sd) {
+                if (first < 0)
+                    first = i;
+                vil += (int)(s->p[i].vil_now + 0.5f);
+                mil += s->p[i].n_mil;
+            }
         COLORREF c = first >= 0 ? PCOL[(s->p[first].number - 1) & 7] : MUTED;
-        wchar_t big[24], small[200];
+        wchar_t big[24], name[200], small[200];
         swprintf(big, 24, L"%.1f%%", pc);
-        swprintf(small, 200, L"%ls%ls  ·  %ld dân", an->side_name[sd], sd == an->dc_side ? L"  (RỚT MẠNG)" : L"",
-                 an->side_pop[sd]);
+        swprintf(name, 200, L"%ls%ls", an->side_name[sd], sd == an->dc_side ? L"  (RỚT MẠNG)" : L"");
+        /* timeline = tổng dân số (dân + quân); kèm số dân / quân lúc đọc để không hiểu nhầm */
+        if (an->nsides <= 2)
+            swprintf(small, 200, L"Dân số %ld (dân + quân)\nLúc đọc: %d dân · %d quân", an->side_pop[sd], vil, mil);
+        else
+            swprintf(small, 200, L"Dân số %ld (dân + quân)", an->side_pop[sd]);
         int bigf = an->nsides <= 2 ? F_BIG : F_VERDICT;
         text(dc, bigf, sd == an->dc_side ? BAD_RED : INK, x + S(20), yy, S(170), rowh - S(16), big,
              DT_LEFT | DT_SINGLELINE | DT_VCENTER);
-        text(dc, F_SMALL, MUTED, x + S(176), yy + S(6), w - S(196), rowh - S(26), small,
-             DT_LEFT | DT_WORDBREAK | DT_END_ELLIPSIS);
+        text(dc, F_BTN, INK, x + S(176), yy + S(4), w - S(196), S(18), name,
+             DT_LEFT | DT_SINGLELINE | DT_END_ELLIPSIS);
+        text(dc, F_SMALL, MUTED, x + S(176), yy + S(24), w - S(196), rowh - S(50), small, DT_LEFT | DT_END_ELLIPSIS);
         int bx = x + S(176), bw = w - S(196), by = yy + rowh - S(26);
         fill(dc, bx, by, bw, S(8), RGB(46, 30, 30));
         fill(dc, bx, by, (int)(bw * pc / 100), S(8), c);
@@ -433,8 +442,8 @@ static void military(HDC dc, int x, int y, int w, int h)
         mil_cell(p->n_mil > 0 ? &p->mil[0] : NULL, c3, 80);
         mil_cell(p->n_mil > 1 ? &p->mil[1] : NULL, c4, 80);
         int level;
-        int len = swprintf(c5, 120, L"%ls", mil_verdict(fl, p->n_mil, &level));
-        if (p->n_mil > 2 && len > 0)
+        int len = swprintf(c5, 120, L"%ls", mil_verdict(fl, p->n_mil, 1, &level));
+        if (level < 2 && p->n_mil > 0 && len > 0)
             swprintf(c5 + len, 120 - len, L" · %d quân", p->n_mil);
         const wchar_t *cells[6] = {c0, c1, c2, c3, c4, c5};
         for (int c = 0; c < 6; c++) {
@@ -461,7 +470,7 @@ static void military(HDC dc, int x, int y, int w, int h)
 static int layout_height(void)
 {
     int n = U.a->snap.n > 2 ? U.a->snap.n : 2;
-    return 76 + 16 + 116 + 18 + 300 + 16 + (104 + 28 * n) + 70;
+    return 76 + 16 + 116 + 18 + 330 + 16 + (104 + 28 * n) + 70;
 }
 
 static void paint(HDC dc, int W, int H)
@@ -472,9 +481,9 @@ static void paint(HDC dc, int W, int H)
     verdict(dc, m, y, W - 2 * m, S(112));
     y += S(112 + 18);
     int left = (W - 2 * m - S(16)) * 60 / 100;
-    chart(dc, m, y, left, S(300));
-    shares(dc, m + left + S(16), y, W - 2 * m - left - S(16), S(300));
-    y += S(300 + 16);
+    chart(dc, m, y, left, S(330));
+    shares(dc, m + left + S(16), y, W - 2 * m - left - S(16), S(330));
+    y += S(330 + 16);
     int n = U.a->snap.n > 2 ? U.a->snap.n : 2;
     military(dc, m, y, W - 2 * m, S(104 + 28 * n));
     /* chân trang */

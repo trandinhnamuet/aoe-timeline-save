@@ -26,7 +26,8 @@ typedef struct {
     int status;                 /* 0 đang chơi, 1 thắng, 2 thua */
     int resigned;
     int comm_state;             /* trạng thái người chơi trong phiên mạng */
-    float pop_now;              /* dân số hiện tại (thuộc tính 11) */
+    float pop_now;              /* dân số hiện tại = dân + quân (thuộc tính 11) */
+    float vil_now;              /* số dân (villager) hiện tại (thuộc tính 37) */
     int n_samples;
     unsigned char samples[MAX_SAMPLES];
     int age_done_s[3];          /* lên xong đời 2 / 3 / 4 (giây game), -1 nếu chưa */

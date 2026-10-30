@@ -280,6 +280,7 @@ int game_read(Snapshot *s)
         pl->comm_state = comm ? i32(comm + C_PLAYER_STATE + 4 * i) : 0;
         DWORD attrs = u32(p + P_ATTRS);
         pl->pop_now = attrs ? f32(attrs + 11 * 4) : 0;
+        pl->vil_now = attrs ? f32(attrs + 37 * 4) : 0;
         read_timeline(p, pl);
         pl->bronze_click_s = -1;
         DWORD res = u32(p + P_RESEARCH);

@@ -46,7 +46,8 @@ void app_analyze(App *a);
 void app_demo(App *a);
 void fmt_time(int s, wchar_t *out, int n);   /* "mm:ss" / "h:mm:ss"; "—" nếu s < 0 */
 const wchar_t *civ_name(int civ);
-const wchar_t *mil_verdict(int flags, int n_mil, int *level);   /* level 2 vi phạm, 1 không xác định, 0 hợp lệ */
+/* level 2 vi phạm, 1 không xác định, 0 hợp lệ; brief = bản ngắn cho cột KẾT LUẬN của giao diện */
+const wchar_t *mil_verdict(int flags, int n_mil, int brief, int *level);
 
 int report_write(App *a);       /* ghi .txt + .csv vào out_dir; 1 = được */
 

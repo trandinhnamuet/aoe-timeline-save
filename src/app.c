@@ -23,17 +23,17 @@ void fmt_time(int s, wchar_t *out, int n)
         swprintf(out, n, L"%02d:%02d", s / 60, s % 60);
 }
 
-const wchar_t *mil_verdict(int fl, int n_mil, int *level)
+const wchar_t *mil_verdict(int fl, int n_mil, int brief, int *level)
 {
     *level = (fl & (MIL_BEFORE_CLICK | MIL_TWO_BEFORE_DONE)) ? 2 : fl ? 1 : 0;
     if ((fl & MIL_BEFORE_CLICK) && (fl & MIL_TWO_BEFORE_DONE))
-        return L"VI PHẠM: quân trước kích + 2 quân";
+        return brief ? L"VI PHẠM: cả 2 lỗi" : L"VI PHẠM: quân trước khi kích đời 3 + 2 quân trước khi lên xong";
     if (fl & MIL_BEFORE_CLICK)
-        return L"VI PHẠM: quân trước khi kích đời 3";
+        return brief ? L"VI PHẠM: quân trước kích" : L"VI PHẠM: quân trước khi kích đời 3";
     if (fl & MIL_TWO_BEFORE_DONE)
-        return L"VI PHẠM: 2 quân trước khi lên xong";
+        return brief ? L"VI PHẠM: 2 quân trước xong" : L"VI PHẠM: 2 quân trước khi lên xong đời 3";
     if (fl)
-        return L"Không xác định (không rõ giờ sinh)";
+        return brief ? L"Không xác định" : L"Không xác định (game không lưu giờ sinh của quân)";
     return n_mil ? L"Hợp lệ" : L"Hợp lệ (không có quân)";
 }
 
@@ -323,6 +323,7 @@ void app_demo(App *a)
             p->samples[k] = (unsigned char)(v < 3 ? 3 : v);
         }
         p->pop_now = p->samples[p->n_samples - 1];
+        p->vil_now = p->pop_now - (i == 0 ? 2 : 3);
         p->age_done_s[0] = i == 0 ? 8 * 60 + 41 : 9 * 60 + 12;
         p->age_done_s[1] = i == 0 ? 13 * 60 + 25 : -1;
         p->bronze_state = i == 0 ? 3 : 2;
